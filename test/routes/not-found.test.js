@@ -39,7 +39,7 @@ describe('Not found page', () => {
     expect(links).toHaveLength(1);
 
     expect(screen.getByTestId('not-found-link')).toBeInTheDocument();
-    expect(screen.getByTestId('not-found-link')).toHaveTextContent('TBC');
+    expect(screen.getByTestId('not-found-link')).toHaveTextContent('https://www.gov.uk/contact-ukvi-inside-outside-uk');
   });
 });
 

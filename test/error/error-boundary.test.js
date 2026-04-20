@@ -29,6 +29,6 @@ describe('ErrorBoundary', () => {
     expect(screen.getByText(/We will reply in 3 to 5 working days/i)).toBeInTheDocument();
 
     const contactLink = screen.getByTestId('error-contact-form');
-    expect(contactLink).toHaveAttribute('href', expect.stringContaining('TBC'));
+    expect(contactLink).toHaveAttribute('href', expect.stringContaining('https://www.gov.uk/contact-ukvi-inside-outside-uk'));
   });
 });
