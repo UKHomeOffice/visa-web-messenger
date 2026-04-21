@@ -20,7 +20,6 @@ environment:
   IMAGE_REPO: so/visa-web-messenger
   NON_PROD_AVAILABILITY: Mon-Fri 00:00-23:59 Europe/London
   READY_FOR_TEST_DELAY: 20s
-  NOTIFY_STUB: stub
 
 include_default_branch: &include_default_branch
   include:
@@ -178,7 +177,6 @@ steps:
     pull: if-not-exists
     image: quay.io/ukhomeofficedigital/kd:v1.14.0
     environment:
-      # NOTIFY_STUB: stub
       KUBE_SERVER:
         from_secret: KUBE_SERVER_DEV
       KUBE_TOKEN:
