@@ -91,7 +91,7 @@ The service is deployed onto Kubernetes, all manifest files can be found in the 
 ## Useful scripts (from package.json)
 
 - `yarn dev` — vite dev server on port 3000
-- `yarn build` — vite build (production) with public URL `/assets/`
+- `yarn build` — vite build (production)
 - `yarn test` — run Jest tests with coverage
 
 ## Key files
@@ -99,6 +99,5 @@ The service is deployed onto Kubernetes, all manifest files can be found in the 
 - `src/index.js` — bootstrap + env loading
 - `src/env-bootstrap.js` — env loading & accessor
 - `config.js` — mapping of runtime values and the `LOG_ENDPOINT`
-- `utils/genesys-agent.js` — UI banner helpers for connection/agent state
 - `generate-env.sh` and `nginx/app.conf` — runtime env injection and nginx configuration
 
