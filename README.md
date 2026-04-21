@@ -104,12 +104,12 @@ cp env.json dist/env.json
 3. Serve `dist/` with a simple static server (you can use `npx serve` or python):
 
 ```bash
-npx serve -s dist -l 8080
+npx serve -s dist -l 8000
 # or
-python3 -m http.server --directory dist 8080
+python3 -m http.server --directory dist 8000
 ```
 
-Then open `http://localhost:8080` to verify the built app loads and reads `env.json`.
+Then open `http://localhost:8000` to verify the built app loads and reads `env.json`.
 
 ### Run the Docker image locally (test runtime env injection)
 
