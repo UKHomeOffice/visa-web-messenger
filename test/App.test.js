@@ -11,7 +11,7 @@ describe('App', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText(/Home Office Visas Chat/i)).toBeInTheDocument();
+    expect(screen.getByText(/Home Office UK Visas and Immigration Chat/i)).toBeInTheDocument();
   });
 
   test('renders the NotFound route for unknown paths', () => {

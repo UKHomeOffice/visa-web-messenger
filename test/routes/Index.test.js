@@ -20,7 +20,7 @@ describe('Visa page', () => {
   test('renders Visa page with correct content', () => {
     renderComponentWithRouter(<Visa />);
 
-    expect(screen.getByRole('heading', { name: 'Home Office Visas Chat' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Home Office UK Visas and Immigration Chat' })).toBeInTheDocument();
     expect(screen.getByText(/Ask our digital assistant about Visas/i)).toBeInTheDocument();
     expect(screen.getByTestId('genesys-chat-component')).toBeInTheDocument();
   });
