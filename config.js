@@ -16,7 +16,7 @@ export default {
   service: {
     deploymentId: getEnvValueByKey('VISA_DEPLOYMENT_ID'),
     environment: getEnvValueByKey('GENESYS_ENVIRONMENT'),
-    name: 'Visas',
+    name: 'UK Visas and Immigration',
     subText: 'Visas',
     cookiePolicy: 'visa_cookie_policy',
     errorContactLink: 'https://www.gov.uk/contact-ukvi-inside-outside-uk',

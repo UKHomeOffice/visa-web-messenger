@@ -19,7 +19,7 @@ describe('logToService', () => {
     await logToService('info', 'Test message');
 
     const body = JSON.parse(global.fetch.mock.calls[0][1].body);
-    expect(body.service).toBe('Visas');
+    expect(body.service).toBe('UK Visas and Immigration');
     expect(body.level).toBe('info');
     expect(body.message).toBe('Test message');
     expect(body).toHaveProperty('timestamp');
