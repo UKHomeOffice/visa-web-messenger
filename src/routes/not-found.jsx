@@ -23,7 +23,8 @@ export default function NotFound() {
         </p>
         <h2 className="govuk-heading-m">Need help outside of working hours?</h2>
         <p className="govuk-body">
-          If you need support and it's outside of normal working hours, you can use the following contact form for Visas:
+          If you need support and it's outside of normal working hours,
+          you can use the following contact form for Visas:
         </p>
         <p className="govuk-body">
           <a id="not-found-link"
