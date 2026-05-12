@@ -14,7 +14,7 @@ describe('Accessibility page', () => {
     renderComponentWithRouter(<AccessibilityStatement />);
 
     const headings = screen.getAllByRole('heading');
-    expect(headings[0]).toHaveTextContent('Accessibility statement for visa');
+    expect(headings[0]).toHaveTextContent('Accessibility statement for Visa');
     expect(headings[1]).toHaveTextContent('Reporting accessibility problems with this service');
     expect(headings[2]).toHaveTextContent('Enforcement procedure');
     expect(headings[3]).toHaveTextContent('Technical information about this service accessibility');
