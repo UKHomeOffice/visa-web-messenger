@@ -8,7 +8,7 @@ export default function AccessibilityStatement() {
   return (
     <>
       <h1 className="govuk-heading-xl">
-        Accessibility statement for visa
+        Accessibility statement for Visa
       </h1>
 
       <p className="govuk-body">
