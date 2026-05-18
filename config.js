@@ -23,9 +23,9 @@ export default {
     gaUtmParam: '?utm_source=webmessenger&utm_medium=internal_link&utm_campaign=UK_VISA_Internal_WebMessenger'
   },
   accessibility: {
-    statementDate: '(10 November 2025)',
-    statementReviewedDate: '(10 November 2025)',
-    websiteUpdates: '(30 October 2025)'
+    statementDate: '(18 May 2026)',
+    statementReviewedDate: '(18 May 2026)',
+    websiteUpdates: '(14 May 2026)'
   }, 
   logApiEndpoint: getEnvValueByKey('LOG_ENDPOINT')
 };
