@@ -30,6 +30,7 @@ export default function Visa() {
               offlineText: config.bannerTypeDisplay.offline,
               onlineText: config.bannerTypeDisplay.online,
               botMetaDisplay: config.botMetaDisplay,
+              utmParams: config.service.gaUtmParam
             }}
             onChatEnded={() => navigate('/end-chat-confirmation')}
             loggingCallback={logData}
