@@ -54,6 +54,7 @@ unit_tests: &unit_tests
 sonar_scanner: &sonar_scanner
   pull: always
   image: quay.io/ukhomeofficedigital/sonar-scanner:latest
+  timeout: 10m
   commands:
     - sonar-scanner -Dproject.settings=./sonar-project.properties -Dsonar.qualitygate.wait=true -Dsonar.qualitygate.timeout=300
 
@@ -184,7 +185,7 @@ steps:
         <<: *include_all_branches
       event: [push, pull_request]
     depends_on:
-      - unit_tests
+      - sonar_scanner
   - name: push_ecr
     pull: if-not-exists
     image: plugins/ecr
