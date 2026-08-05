@@ -31,3 +31,4 @@ jobs:
       # a short-lived installation token for checking out hof-ai-workflows.
       HOF_AI_WORKFLOWS_APP_ID: ${{ secrets.HOF_AI_WORKFLOWS_APP_ID }}
       HOF_AI_WORKFLOWS_APP_PRIVATE_KEY: ${{ secrets.HOF_AI_WORKFLOWS_APP_PRIVATE_KEY }}
+      HOF_AI_WORKFLOWS_APP_INSTALLATION_ID: ${{ secrets.HOF_AI_WORKFLOWS_APP_INSTALLATION_ID }}
