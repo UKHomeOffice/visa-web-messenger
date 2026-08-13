@@ -30,12 +30,13 @@ export default function Visa() {
               offlineText: config.bannerTypeDisplay.offline,
               onlineText: config.bannerTypeDisplay.online,
               botMetaDisplay: config.botMetaDisplay,
-              utmParams: config.service.gaUtmParam
+              utmParams: config.service.gaUtmParam,
+              disableTextMessageSendingOnQuickReply: config.service.disableTextMessageSendingOnQuickReply
             }}
             onChatEnded={() => navigate('/end-chat-confirmation')}
             loggingCallback={logData}
             loadingSpinner={<LoadingSpinner />}
-            errorCallback= {() => setIsErrorState(true)}
+            errorCallback={() => setIsErrorState(true)}
           />
         </>
       )}

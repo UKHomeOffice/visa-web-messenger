@@ -16,6 +16,10 @@ const renderComponentWithRouter = (component) => render(
   </MemoryRouter>
 );
 
+beforeEach(() => {
+  GenesysChatComponent.mockClear();
+});
+
 describe('Visa page', () => {
   test('renders Visa page with correct content', () => {
     renderComponentWithRouter(<Visa />);
@@ -23,6 +27,14 @@ describe('Visa page', () => {
     expect(screen.getByRole('heading', { name: 'Home Office UK Visas and Immigration Chat' })).toBeInTheDocument();
     expect(screen.getByText(/Ask our digital assistant about Visas/i)).toBeInTheDocument();
     expect(screen.getByTestId('genesys-chat-component')).toBeInTheDocument();
+  });
+
+  test('passes quick reply message sending disabling flag to Genesys chat component', () => {
+    renderComponentWithRouter(<Visa />);
+
+    const props = GenesysChatComponent.mock.calls[0][0];
+
+    expect(props.serviceMetadata.disableTextMessageSendingOnQuickReply).toBe(true);
   });
 
   test('renders error component when error occurs', async () => {
