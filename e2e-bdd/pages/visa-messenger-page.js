@@ -110,24 +110,55 @@ class VisaMessengerPage {
     await this.page.getByRole('button', { name: buttonText, exact: true }).first().click();
   }
 
+  async waitForChatReadyOrJourney() {
+    const messageInput = this.page.locator(this.selectors.messageInput);
+    const somethingElse = this.page.getByRole('button', { name: 'Something Else', exact: true }).first();
+
+    await expect.poll(async () => {
+      if (await somethingElse.isVisible().catch(() => false)) {
+        return 'journey';
+      }
+
+      return await messageInput.isEnabled().catch(() => false) ? 'input' : 'waiting';
+    }, {
+      timeout: 30_000,
+      intervals: [300, 600, 1000]
+    }).toMatch(/input|journey/);
+
+    if (await somethingElse.isVisible().catch(() => false)) {
+      await somethingElse.click();
+      const travelToTheUk = this.page.getByRole('button', { name: 'Travel To The UK', exact: true }).first();
+      await expect(travelToTheUk).toBeVisible({ timeout: 30_000 });
+      await travelToTheUk.click();
+
+      await expect(messageInput).toBeEnabled({ timeout: 30_000 });
+    }
+  }
+
   async refresh() {
     await this.page.reload();
     await this.expectChatInputVisible();
+    await expect(this.page.locator(this.selectors.messageInput)).toBeEnabled({ timeout: 30_000 });
+
+    if (this.sequentialPrefix && this.sequentialMessageIndex > 0) {
+      await expect(
+        this.page.locator(this.selectors.inboundMessageWrapper).filter({
+          hasText: `${this.sequentialPrefix} ${this.sequentialMessageIndex}`
+        })
+      ).toBeVisible({ timeout: 30_000 });
+    }
+
     this.lastInboundCountAfterRefresh = await this.page.locator(this.selectors.inboundMessageWrapper).count();
   }
 
   async sendSequentialMessages(prefix, count) {
     this.sequentialPrefix = prefix;
     for (let index = 1; index <= count; index += 1) {
-      const priorInboundCount = await this.page.locator(this.selectors.inboundMessageWrapper).count();
-      await this.sendMessage(`${prefix} ${index}`);
-
-      await expect.poll(async () => {
-        return this.page.locator(this.selectors.inboundMessageWrapper).count();
-      }, {
-        timeout: 10_000,
-        intervals: [300, 600, 1000]
-      }).toBeGreaterThan(priorInboundCount);
+      const message = `${prefix} ${index}`;
+      await this.sendMessage(message);
+      await expect(this.page.locator(this.selectors.inboundMessageWrapper).filter({
+        has: this.page.getByText(message, { exact: true })
+      })).toBeVisible();
 
       this.sequentialMessageIndex = index;
     }
@@ -142,32 +173,12 @@ class VisaMessengerPage {
 
     const nextIndex = this.sequentialMessageIndex + 1;
     const nextMessage = `${this.sequentialPrefix} ${nextIndex}`;
-    let sendWasObserved = false;
 
-    for (let attempt = 1; attempt <= 3; attempt += 1) {
-      await this.sendMessage(nextMessage);
-      await expect(this.page.locator(this.selectors.messageInput)).toHaveValue('');
-
-      try {
-        await expect.poll(async () => {
-          return this.page
-            .locator(this.selectors.inboundMessageWrapper)
-            .filter({ hasText: nextMessage })
-            .count();
-        }, {
-          timeout: 10_000,
-          intervals: [500, 1000, 2000]
-        }).toBeGreaterThan(0);
-
-        sendWasObserved = true;
-        this.sequentialMessageIndex = nextIndex;
-        break;
-      } catch {
-        // Retry while session state rehydrates after refresh.
-      }
-    }
-
-    expect(sendWasObserved).toBe(true);
+    await this.sendMessage(nextMessage);
+    await expect(this.page.locator(this.selectors.inboundMessageWrapper).filter({
+      has: this.page.getByText(nextMessage, { exact: true })
+    })).toBeVisible();
+    this.sequentialMessageIndex = nextIndex;
   }
 
   async expectMessengerHeading() {
@@ -325,17 +336,18 @@ class VisaMessengerPage {
   }
 
   async expectOlderHistoryFetched() {
-    await expect.poll(async () => {
-      const firstMessage = this.page.locator(this.selectors.inboundMessageWrapper).filter({
-        has: this.page.getByText(`${this.sequentialPrefix} 1`, { exact: true })
-      });
+    const chatMessages = this.page.locator('.chat-messages');
+    const firstMessage = this.page.locator(this.selectors.inboundMessageWrapper).filter({
+      has: this.page.getByText(`${this.sequentialPrefix} 1`, { exact: true })
+    });
 
+    await expect.poll(async () => {
       if (await firstMessage.count() > 0) {
         return 1;
       }
 
-      await this.page.locator('.chat-messages').evaluate((el) => {
-        el.scrollTop = el.scrollHeight;
+      await chatMessages.evaluate((el) => {
+        el.scrollTop = 24;
         el.dispatchEvent(new Event('scroll', { bubbles: true }));
         el.scrollTop = 0;
         el.dispatchEvent(new Event('scroll', { bubbles: true }));
@@ -346,10 +358,25 @@ class VisaMessengerPage {
       timeout: 30_000,
       intervals: [500]
     }).toBeGreaterThan(0);
+
+    await firstMessage.evaluate((message) => {
+      const container = message.closest('.chat-messages');
+      const offset = message.getBoundingClientRect().top - container.getBoundingClientRect().top;
+      container.scrollTop += offset;
+      container.dispatchEvent(new Event('scroll', { bubbles: true }));
+    });
   }
 
   async expectTopInboundMessage(expectedMessage) {
-    await expect(this.page.locator(this.selectors.inboundMessageWrapper).first()).toContainText(expectedMessage);
+    const expected = this.page.locator(this.selectors.inboundMessageWrapper).filter({
+      has: this.page.getByText(expectedMessage, { exact: true })
+    });
+
+    await expect(expected).toBeVisible();
+    await expect.poll(async () => expected.evaluate((message) => {
+      const container = message.closest('.chat-messages');
+      return Math.abs(message.getBoundingClientRect().top - container.getBoundingClientRect().top);
+    })).toBeLessThanOrEqual(2);
   }
 }
 
