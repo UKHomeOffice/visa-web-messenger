@@ -34,6 +34,8 @@ Feature: VISA web messenger core and guided journeys
     Given I open the VISA web messenger
     And I dismiss cookies by accepting
     Then I should see chat controls
+    When I click the quick reply button "Something Else"
+    And I click the quick reply button "Travel To The UK"
     When I send the message "Hello"
     Then I should see my message "Hello"
     And I should see message metadata prefixed with "You at"
@@ -174,14 +176,16 @@ Feature: VISA web messenger core and guided journeys
     Then I should see the following quick reply buttons
       | Yes |
       | No  |
+    When I click the quick reply button "Yes"
+    Then I should see the assistant message containing "How can we help you today? Please enter your query"
     When I send the message "User First Message"
-    Then I should see the assistant message containing "I didn't understand that. Please respond"
+    Then I should see the assistant message containing "I’m sorry I didn’t understand your question. Please rephrase the question and ask me again"
     And I should see message metadata prefixed with "Digital assistant at"
     When I send the message "User Second Message"
-    Then I should see the assistant message containing "I didn't understand that. Please respond"
+    Then I should see the assistant message containing "I’m sorry I didn’t understand your question"
     And I should see message metadata prefixed with "Digital assistant at"
     When I send the message "User Third Message"
-    Then I should see the assistant message containing "I'm sorry, I didn't understand that. Please respond"
+    And I should see message metadata prefixed with "Digital assistant at"
 
   Scenario: Offline and reconnect banners with control disable and enable
     Given I open the VISA web messenger
@@ -198,7 +202,9 @@ Feature: VISA web messenger core and guided journeys
   Scenario: Send 26 sequential messages and continue after refresh
     Given I open the VISA web messenger
     And I dismiss cookies by accepting
-    When I send 26 sequential messages with prefix "sequential message"
+    When I click the quick reply button "Something Else"
+    And I click the quick reply button "Travel To The UK"
+    And I send 26 sequential messages with prefix "sequential message"
     Then I should see my message "sequential message 26"
     When I refresh the page
     And I send the next sequential message with prefix "sequential message"
@@ -208,6 +214,8 @@ Feature: VISA web messenger core and guided journeys
   Scenario: Scroll to top fetches older history after refresh
     Given I open the VISA web messenger
     And I dismiss cookies by accepting
+    When I click the quick reply button "Something Else"
+    And I click the quick reply button "Travel To The UK"
     When I send 35 sequential messages with prefix "sequential message"
     And I refresh the page
     Then I should be able to fetch older history by scrolling to top

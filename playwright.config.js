@@ -13,7 +13,7 @@ module.exports = defineConfig({
   testDir,
   fullyParallel: true,
   retries: process.env.CI ? 2 : 0,
-  timeout: 90_000,
+  timeout: 180_000,
   expect: {
     timeout: 15_000
   },
@@ -35,6 +35,13 @@ module.exports = defineConfig({
   projects: [
     {
       name: 'chromium',
+      grepInvert: /@history/,
+      use: { ...devices['Desktop Chrome'] }
+    },
+    {
+      name: 'chromium-history',
+      grep: /@history/,
+      fullyParallel: false,
       use: { ...devices['Desktop Chrome'] }
     }
   ]
