@@ -3667,10 +3667,10 @@ hermes-parser@^0.25.1:
   dependencies:
     hermes-estree "0.25.1"
 
-hof-genesys-chat-component@0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/hof-genesys-chat-component/-/hof-genesys-chat-component-0.7.0.tgz#ea58f2474bced997b850a1f4de69f88b878d84f2"
-  integrity sha512-zKDojeVVJKEAAXwiuL/1X2x14YCBKRk0KKREqgU6Dm/hmJWW3IxiGvBuCwP0PDENX78EFG7PUutdKoN+feb0Yw==
+hof-genesys-chat-component@0.7.1:
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/hof-genesys-chat-component/-/hof-genesys-chat-component-0.7.1.tgz#341453dc9abbdbf2533cd72d82595a4c287479aa"
+  integrity sha512-Mo1X7/bzoGtNQcvS1hZrguUDyRDZ8MLoSQf1rEf1laTLQkRJD3YFeNVdc67QgMjWWUpmE351ofAWvdguEiMykw==
   dependencies:
     react-markdown "^10.1.0"
     remark-breaks "^4.0.0"
