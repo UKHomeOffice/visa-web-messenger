@@ -19,6 +19,7 @@ export default {
     name: 'UK Visas and Immigration',
     subText: 'Visas',
     cookiePolicy: 'visa_cookie_policy',
+    disableTextMessageSendingOnQuickReply: true,
     errorContactLink: 'https://www.gov.uk/contact-ukvi-inside-outside-uk',
     gaUtmParam: '?utm_source=webmessenger&utm_medium=internal_link&utm_campaign=UK_VISA_Internal_WebMessenger'
   },
