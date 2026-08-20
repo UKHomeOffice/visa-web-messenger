@@ -82,6 +82,10 @@ Then('I should see the VISA messenger heading', async ({ visaPage }) => {
   await visaPage.expectMessengerHeading();
 });
 
+Then('I should see the feedback link', async ({ visaPage }) => {
+  await visaPage.expectFeedbackLink();
+});
+
 Then('I should see cookie banner action controls', async ({ visaPage }) => {
   await visaPage.expectCookieActionButtonsVisible();
 });

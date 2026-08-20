@@ -185,6 +185,13 @@ class VisaMessengerPage {
     await expect(this.page.getByRole('heading', { name: 'Home Office UK Visas and Immigration Chat' })).toBeVisible();
   }
 
+  async expectFeedbackLink() {
+    const feedbackLink = this.page.getByRole('link', { name: 'give your feedback (opens in new tab)' });
+    await expect(feedbackLink).toBeVisible();
+    await expect(feedbackLink).toHaveAttribute('href', 'https://ukhomeoffice.qualtrics.com/jfe/form/SV_ehDrH6eJrtGBFMW');
+    await expect(feedbackLink).toHaveAttribute('target', '_blank');
+  }
+
   async expectCookieActionButtonsVisible() {
     await expect(this.page.locator(this.selectors.acceptCookies)).toBeVisible();
     await expect(this.page.locator(this.selectors.rejectCookies)).toBeVisible();

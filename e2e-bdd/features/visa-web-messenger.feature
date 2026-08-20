@@ -24,6 +24,10 @@ Feature: VISA web messenger core and guided journeys
     When I hide the cookie acceptance message
     Then I should not see the hide cookie message button
 
+   Scenario: Feedback link is displayed
+    Given I open the VISA web messenger
+    Then I should see the feedback link
+
   Scenario: Invalid page returns not found
     Given I open an invalid VISA page
     When I accept analytics cookies
