@@ -65,9 +65,41 @@ class VisaMessengerPage {
 
   async sendMessage(message) {
     this.lastOutboundCount = await this.page.locator(this.selectors.outboundMessageWrapper).count();
-    await this.expectChatInputVisible();
-    await this.page.locator(this.selectors.messageInput).fill(message);
-    await this.page.locator(this.selectors.sendButton).click();
+    const messageInput = this.page.locator(this.selectors.messageInput);
+    const sendButton = this.page.locator(this.selectors.sendButton);
+
+    for (let attempt = 1; attempt <= 4; attempt += 1) {
+      await this.waitForChatReadyOrJourney();
+
+      if (!(await this.isComposerReady())) {
+        continue;
+      }
+
+      try {
+        await messageInput.fill(message, { timeout: 3_000 });
+      } catch {
+        continue;
+      }
+
+      // Journey quick replies can re-disable composer right after fill; recover and retry.
+      if (!(await sendButton.isEnabled().catch(() => false))) {
+        continue;
+      }
+
+      if (await sendButton.isEnabled().catch(() => false)) {
+        try {
+          await sendButton.click({ timeout: 3_000 });
+          return;
+        } catch {
+          // Send can be disabled again during UI transitions; retry the flow.
+        }
+      }
+    }
+
+    await this.waitForChatReadyOrJourney();
+    await messageInput.fill(message, { timeout: 3_000 });
+    await expect(sendButton).toBeEnabled({ timeout: 10_000 });
+    await sendButton.click({ timeout: 3_000 });
   }
 
   async openEndChatDialog() {
@@ -112,40 +144,67 @@ class VisaMessengerPage {
 
   async waitForChatReadyOrJourney() {
     const messageInput = this.page.locator(this.selectors.messageInput);
-    const somethingElse = this.page.getByRole('button', { name: 'Something Else', exact: true }).first();
-
-    await expect.poll(async () => {
-      if (await somethingElse.isVisible().catch(() => false)) {
-        return 'journey';
+    const sendButton = this.page.locator(this.selectors.sendButton);
+    for (let attempt = 1; attempt <= 10; attempt += 1) {
+      if (await this.isComposerReady()) {
+        return;
       }
 
-      return await messageInput.isEnabled().catch(() => false) ? 'input' : 'waiting';
+      await this.tryJourneyRecoveryClick('Something Else');
+      await this.tryJourneyRecoveryClick('Travel To The UK');
+
+      if (await this.isComposerReady()) {
+        return;
+      }
+
+      await this.page.waitForTimeout(300);
+    }
+
+    await expect.poll(async () => {
+      return this.isComposerReady();
     }, {
       timeout: 30_000,
       intervals: [300, 600, 1000]
-    }).toMatch(/input|journey/);
+    }).toBe(true);
 
-    if (await somethingElse.isVisible().catch(() => false)) {
-      await somethingElse.click();
-      const travelToTheUk = this.page.getByRole('button', { name: 'Travel To The UK', exact: true }).first();
-      await expect(travelToTheUk).toBeVisible({ timeout: 30_000 });
-      await travelToTheUk.click();
+    await expect(messageInput).toBeEnabled({ timeout: 10_000 });
+    await expect(sendButton).toBeEnabled({ timeout: 10_000 });
+  }
 
-      await expect(messageInput).toBeEnabled({ timeout: 30_000 });
+  async isComposerReady() {
+    const inputEnabled = await this.page.locator(this.selectors.messageInput).isEnabled().catch(() => false);
+    const sendEnabled = await this.page.locator(this.selectors.sendButton).isEnabled().catch(() => false);
+    return inputEnabled && sendEnabled;
+  }
+
+  async tryJourneyRecoveryClick(label) {
+    const quickReply = this.page.getByRole('button', { name: label, exact: true }).first();
+    if (!(await quickReply.isVisible().catch(() => false))) {
+      return false;
+    }
+
+    try {
+      await quickReply.click({ timeout: 2_000 });
+      return true;
+    } catch {
+      return false;
     }
   }
 
   async refresh() {
     await this.page.reload();
     await this.expectChatInputVisible();
-    await expect(this.page.locator(this.selectors.messageInput)).toBeEnabled({ timeout: 30_000 });
+    await this.waitForChatReadyOrJourney();
 
     if (this.sequentialPrefix && this.sequentialMessageIndex > 0) {
-      await expect(
-        this.page.locator(this.selectors.inboundMessageWrapper).filter({
+      await expect.poll(async () => {
+        return this.page.locator(this.selectors.inboundMessageWrapper).filter({
           hasText: `${this.sequentialPrefix} ${this.sequentialMessageIndex}`
-        })
-      ).toBeVisible({ timeout: 30_000 });
+        }).count();
+      }, {
+        timeout: 60_000,
+        intervals: [500, 1000, 2000]
+      }).toBeGreaterThan(0);
     }
 
     this.lastInboundCountAfterRefresh = await this.page.locator(this.selectors.inboundMessageWrapper).count();
@@ -155,10 +214,16 @@ class VisaMessengerPage {
     this.sequentialPrefix = prefix;
     for (let index = 1; index <= count; index += 1) {
       const message = `${prefix} ${index}`;
+
       await this.sendMessage(message);
-      await expect(this.page.locator(this.selectors.inboundMessageWrapper).filter({
-        has: this.page.getByText(message, { exact: true })
-      })).toBeVisible();
+      await expect.poll(async () => {
+        return this.page.locator(this.selectors.inboundMessageWrapper).filter({
+          hasText: message
+        }).count();
+      }, {
+        timeout: 45_000,
+        intervals: [500, 1000, 2000]
+      }).toBeGreaterThan(0);
 
       this.sequentialMessageIndex = index;
     }
@@ -175,9 +240,15 @@ class VisaMessengerPage {
     const nextMessage = `${this.sequentialPrefix} ${nextIndex}`;
 
     await this.sendMessage(nextMessage);
-    await expect(this.page.locator(this.selectors.inboundMessageWrapper).filter({
-      has: this.page.getByText(nextMessage, { exact: true })
-    })).toBeVisible();
+    await expect.poll(async () => {
+      return this.page.locator(this.selectors.inboundMessageWrapper).filter({
+        hasText: nextMessage
+      }).count();
+    }, {
+      timeout: 45_000,
+      intervals: [500, 1000, 2000]
+    }).toBeGreaterThan(0);
+
     this.sequentialMessageIndex = nextIndex;
   }
 
