@@ -251,11 +251,15 @@ steps:
   # Run playwright tests against the pull request branch environment
   - name: e2e_tests
     pull: if-not-exists
-    image: mcr.microsoft.com/playwright:v1.60.0-noble
+    image: mcr.microsoft.com/playwright:v1.61.1-noble
     volumes:
       - name: dockersock
         path: /root/.dockersock
     commands:
+      - npm install -g n
+      - n 24.21.0
+      - hash -r
+      - node --version
       - yarn playwright install --with-deps
       - yarn install --frozen-lockfile
       - test -s /root/.dockersock/branch_url.txt || (echo "Missing deployed branch URL at /root/.dockersock/branch_url.txt" && exit 1)
