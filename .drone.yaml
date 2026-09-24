@@ -60,7 +60,7 @@ sonar_scanner: &sonar_scanner
 
 github_app_token_step: &github_app_token_step
   pull: if-not-exists
-  image: alpine:3.21
+  image: alpine:3.24
   volumes:
     - name: dockersock
       path: /root/.dockersock
@@ -287,7 +287,7 @@ steps:
   # Upload Playwright HTML report for PR and comment a download link
   - name: publish_e2e_report_to_pr
     pull: if-not-exists
-    image: alpine:3.21
+    image: alpine:3.24
     volumes:
       - name: dockersock
         path: /root/.dockersock
