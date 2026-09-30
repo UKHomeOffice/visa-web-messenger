@@ -39,6 +39,7 @@ node_image: &node_image
   pull: if-not-exists
   image: quay.io/ukhomeofficedigital/hof-nodejs:24.21.0-alpine3.24-v2@sha256:7d92e77c7e80762469239cd360565a36daef08db9378415aad4213d9a731213e
 
+
 lint: &lint
   pull: if-not-exists
   image: quay.io/ukhomeofficedigital/hof-nodejs:24.21.0-alpine3.24-v2@sha256:7d92e77c7e80762469239cd360565a36daef08db9378415aad4213d9a731213e
