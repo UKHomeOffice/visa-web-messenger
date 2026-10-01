@@ -1,14 +1,9 @@
-FROM node:24.18.0-alpine3.24@sha256:4ba75f835bb8802193e4c114572113d4b26f95f6f094f4b5229d2a77773e0afc AS builder
+FROM quay.io/ukhomeofficedigital/hof-nodejs:24.21.0-alpine3.24-v4@sha256:c5d1333e7e965464258596faf4ac16a0eadd36029270ed0d8d94ec9003cae19d AS builder
 
 USER root
 
-# Switch to UK Alpine mirrors, update package index and upgrade all installed packages
-RUN echo "http://uk.alpinelinux.org/alpine/v3.24/main" > /etc/apk/repositories ; \
-    echo "http://uk.alpinelinux.org/alpine/v3.24/community" >> /etc/apk/repositories ; \
-    apk upgrade --no-cache
-
-# Upgrade bundled npm deps so Trivy does not report vulnerable undici from base image toolchain
-RUN npm install -g npm@12.0.0 && npm --version
+# Base alpine image ships no runtime, so install node & yarn from the apk repos
+RUN apk add --no-cache nodejs yarn
 
 # Setup nodejs group & nodejs user
 RUN addgroup --system nodejs --gid 998 && \
@@ -51,11 +46,14 @@ RUN yarn build
 
 # Create production image
 
-FROM nginx:stable-alpine@sha256:30f1c0d78e0ad60901648be663a710bdadf19e4c10ac6782c235200619158284 AS final
-    
+FROM nginx:stable-alpine@sha256:0985e772fb9f729e6fa0980da05fca5d9c468e870eed43071545afa9d2e27d94 AS final
+
 USER root
 
 WORKDIR /app
+
+# Patch CVE-2026-93990 (libexpat) present in the pinned base image
+RUN apk upgrade --no-cache libexpat
 
 # Remove default NGINX config
 RUN rm /etc/nginx/conf.d/default.conf
